@@ -2,6 +2,7 @@ use aoc_runner_derive::{aoc, aoc_generator};
 
 #[aoc_generator(day1)]
 fn parse_input(input: &str) -> () {
+    use aoc_parse::{parser, prelude::*};
     unimplemented!()
 }
 
