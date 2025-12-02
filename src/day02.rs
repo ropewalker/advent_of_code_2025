@@ -1,4 +1,5 @@
 use aoc_runner_derive::{aoc, aoc_generator};
+use std::collections::HashSet;
 
 #[aoc_generator(day2)]
 fn parse_input(input: &str) -> Vec<(u128, u128)> {
@@ -37,11 +38,59 @@ fn find_invalid_ids(first_id: u128, last_id: u128) -> Vec<u128> {
     result
 }
 
+fn find_extended_invalid_ids(first_id: u128, last_id: u128) -> HashSet<u128> {
+    let mut result = HashSet::new();
+
+    let first_id_digits = first_id.ilog10() + 1;
+    let last_id_digits = last_id.ilog10() + 1;
+
+    for part_count in 2..=last_id_digits {
+        let part_min_digits = if first_id_digits.is_multiple_of(part_count) {
+            u32::max(first_id_digits / part_count, 1)
+        } else {
+            first_id_digits / part_count + 1
+        };
+        let part_max_digits = last_id_digits / part_count;
+
+        for digits in part_min_digits..=part_max_digits {
+            for part in u128::max(
+                10u128.pow(digits - 1),
+                first_id / 10u128.pow(digits * (part_count - 1)),
+            )
+                ..=u128::min(
+                    10u128.pow(digits) - 1,
+                    last_id / 10u128.pow(digits * (part_count - 1)),
+                )
+            {
+                let mut id = part;
+
+                for _ in 1..part_count {
+                    id = id * 10u128.pow(digits) + part;
+                }
+
+                if id >= first_id && id <= last_id {
+                    result.insert(id);
+                }
+            }
+        }
+    }
+
+    result
+}
+
 #[aoc(day2, part1)]
 fn part1(pairs: &[(u128, u128)]) -> u128 {
     pairs
         .iter()
         .flat_map(|(first_id, last_id)| find_invalid_ids(*first_id, *last_id))
+        .sum()
+}
+
+#[aoc(day2, part2)]
+fn part2(pairs: &[(u128, u128)]) -> u128 {
+    pairs
+        .iter()
+        .flat_map(|(first_id, last_id)| find_extended_invalid_ids(*first_id, *last_id))
         .sum()
 }
 
@@ -52,7 +101,12 @@ mod tests {
     static TEST_INPUT: &str = "11-22,95-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862,565653-565659,824824821-824824827,2121212118-2121212124";
 
     #[test]
-    fn part1_example_1() {
+    fn part1_example() {
         assert_eq!(part1(&parse_input(TEST_INPUT)), 1_227_775_554);
+    }
+
+    #[test]
+    fn part2_example() {
+        assert_eq!(part2(&parse_input(TEST_INPUT)), 4_174_379_265);
     }
 }
