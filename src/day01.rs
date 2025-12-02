@@ -57,7 +57,7 @@ fn part2(rotations: &[i32]) -> usize {
 mod tests {
     use super::*;
 
-    static TEST_INPUT_1: &str = r"L68
+    static TEST_INPUT: &str = r"L68
 L30
 R48
 L5
@@ -69,12 +69,12 @@ R14
 L82";
 
     #[test]
-    fn part1_example_1() {
-        assert_eq!(part1(&parse_input(TEST_INPUT_1)), 3);
+    fn part1_example() {
+        assert_eq!(part1(&parse_input(TEST_INPUT)), 3);
     }
 
     #[test]
-    fn part1_example_2() {
-        assert_eq!(part2(&parse_input(TEST_INPUT_1)), 6);
+    fn part2_example() {
+        assert_eq!(part2(&parse_input(TEST_INPUT)), 6);
     }
 }
