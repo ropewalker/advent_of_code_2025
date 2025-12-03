@@ -16,8 +16,6 @@ fn part1(input: &()) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use supoer::*;
-
     static TEST_INPUT_1: &str = "";
 
     #[test]
