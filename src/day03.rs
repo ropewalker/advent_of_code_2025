@@ -15,8 +15,7 @@ fn largest_joltage(bank: &[usize], num_batteries: usize) -> usize {
     for window in bank.windows(num_batteries).skip(1) {
         for i in 0..num_batteries {
             if window[i] > turned_on[i] {
-                turned_on.truncate(i);
-                turned_on.append(&mut window[i..].to_vec());
+                turned_on[i..].copy_from_slice(&window[i..]);
                 break;
             }
         }
