@@ -1,5 +1,6 @@
 use aoc_runner_derive::{aoc, aoc_generator};
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::cmp::Reverse;
+use std::collections::{BinaryHeap, HashMap, HashSet};
 
 type Position = (i64, i64, i64);
 
@@ -28,18 +29,19 @@ fn init_circuits(junction_box_positions: &[Position]) -> HashMap<usize, HashSet<
 
 fn all_distances_squared(
     junction_box_positions: &[Position],
-) -> BTreeMap<i64, (Position, Position)> {
-    let mut distances_squared_to_pairs: BTreeMap<i64, (Position, Position)> = BTreeMap::new();
+) -> BinaryHeap<Reverse<(i64, Position, Position)>> {
+    let mut distances_squared_to_pairs = BinaryHeap::new();
 
     for i in 0..junction_box_positions.len() - 1 {
         for j in i + 1..junction_box_positions.len() {
             let distance_squared =
                 distance_squared(&junction_box_positions[i], &junction_box_positions[j]);
 
-            distances_squared_to_pairs.insert(
+            distances_squared_to_pairs.push(Reverse((
                 distance_squared,
-                (junction_box_positions[i], junction_box_positions[j]),
-            );
+                junction_box_positions[i],
+                junction_box_positions[j],
+            )));
         }
     }
 
@@ -58,14 +60,13 @@ fn three_largest_circuits_product(
 
     let mut circuits: HashMap<usize, HashSet<Position>> = init_circuits(junction_box_positions);
 
-    let distances_squared_to_pairs: BTreeMap<i64, (Position, Position)> =
-        all_distances_squared(junction_box_positions);
+    let mut distances_squared_to_pairs = all_distances_squared(junction_box_positions);
 
     let mut num_connections = 0;
 
-    for (position1, position2) in distances_squared_to_pairs.values() {
-        let circuit1_id = *positions_to_circuits.get(position1).unwrap();
-        let circuit2_id = *positions_to_circuits.get(position2).unwrap();
+    while let Some(Reverse((_, position1, position2))) = distances_squared_to_pairs.pop() {
+        let circuit1_id = *positions_to_circuits.get(&position1).unwrap();
+        let circuit2_id = *positions_to_circuits.get(&position2).unwrap();
 
         if circuit1_id != circuit2_id {
             let circuit2 = circuits.remove(&circuit2_id).unwrap();
@@ -108,12 +109,11 @@ fn part2(junction_box_positions: &[(i64, i64, i64)]) -> i64 {
 
     let mut circuits: HashMap<usize, HashSet<Position>> = init_circuits(junction_box_positions);
 
-    let distances_squared_to_pairs: BTreeMap<i64, (Position, Position)> =
-        all_distances_squared(junction_box_positions);
+    let mut distances_squared_to_pairs = all_distances_squared(junction_box_positions);
 
-    for (position1, position2) in distances_squared_to_pairs.values() {
-        let circuit1_id = *positions_to_circuits.get(position1).unwrap();
-        let circuit2_id = *positions_to_circuits.get(position2).unwrap();
+    while let Some(Reverse((_, position1, position2))) = distances_squared_to_pairs.pop() {
+        let circuit1_id = *positions_to_circuits.get(&position1).unwrap();
+        let circuit2_id = *positions_to_circuits.get(&position2).unwrap();
 
         if circuit1_id != circuit2_id {
             let circuit2 = circuits.remove(&circuit2_id).unwrap();
@@ -130,9 +130,7 @@ fn part2(junction_box_positions: &[(i64, i64, i64)]) -> i64 {
         }
     }
 
-    let last_positions = distances_squared_to_pairs.values().last().unwrap();
-
-    last_positions.0.0 * last_positions.1.0
+    unreachable!()
 }
 
 #[cfg(test)]
