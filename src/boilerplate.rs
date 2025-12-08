@@ -16,10 +16,10 @@ fn part1(input: &()) -> usize {
 
 #[cfg(test)]
 mod tests {
-    static TEST_INPUT_1: &str = "";
+    static TEST_INPUT: &str = "";
 
     #[test]
-    fn part1_example_1() {
-        assert_eq!(part1(&parse_input(TEST_INPUT_1)), 0);
+    fn part1_example() {
+        assert_eq!(part1(&parse_input(TEST_INPUT)), 0);
     }
 }
