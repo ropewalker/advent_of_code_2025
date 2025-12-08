@@ -18,22 +18,17 @@ fn distance_squared(position1: &Position, position2: &Position) -> i64 {
         + (position2.2 - position1.2).pow(2)
 }
 
-fn three_largest_circuits_product(
-    junction_box_positions: &[Position],
-    total_connections: usize,
-) -> usize {
-    let mut positions_to_circuits: HashMap<Position, usize> = junction_box_positions
-        .iter()
-        .enumerate()
-        .map(|(circuit_id, position)| (*position, circuit_id))
-        .collect();
-
-    let mut circuits: HashMap<usize, HashSet<Position>> = junction_box_positions
+fn init_circuits(junction_box_positions: &[Position]) -> HashMap<usize, HashSet<Position>> {
+    junction_box_positions
         .iter()
         .enumerate()
         .map(|(circuit_id, position)| (circuit_id, HashSet::from([*position])))
-        .collect();
+        .collect()
+}
 
+fn all_distances_squared(
+    junction_box_positions: &[Position],
+) -> BTreeMap<i64, (Position, Position)> {
     let mut distances_squared_to_pairs: BTreeMap<i64, (Position, Position)> = BTreeMap::new();
 
     for i in 0..junction_box_positions.len() - 1 {
@@ -47,6 +42,24 @@ fn three_largest_circuits_product(
             );
         }
     }
+
+    distances_squared_to_pairs
+}
+
+fn three_largest_circuits_product(
+    junction_box_positions: &[Position],
+    total_connections: usize,
+) -> usize {
+    let mut positions_to_circuits: HashMap<Position, usize> = junction_box_positions
+        .iter()
+        .enumerate()
+        .map(|(circuit_id, position)| (*position, circuit_id))
+        .collect();
+
+    let mut circuits: HashMap<usize, HashSet<Position>> = init_circuits(junction_box_positions);
+
+    let distances_squared_to_pairs: BTreeMap<i64, (Position, Position)> =
+        all_distances_squared(junction_box_positions);
 
     let mut num_connections = 0;
 
@@ -93,25 +106,10 @@ fn part2(junction_box_positions: &[(i64, i64, i64)]) -> i64 {
         .map(|(circuit_id, position)| (*position, circuit_id))
         .collect();
 
-    let mut circuits: HashMap<usize, HashSet<Position>> = junction_box_positions
-        .iter()
-        .enumerate()
-        .map(|(circuit_id, position)| (circuit_id, HashSet::from([*position])))
-        .collect();
+    let mut circuits: HashMap<usize, HashSet<Position>> = init_circuits(junction_box_positions);
 
-    let mut distances_squared_to_pairs: BTreeMap<i64, (Position, Position)> = BTreeMap::new();
-
-    for i in 0..junction_box_positions.len() - 1 {
-        for j in i + 1..junction_box_positions.len() {
-            let distance_squared =
-                distance_squared(&junction_box_positions[i], &junction_box_positions[j]);
-
-            distances_squared_to_pairs.insert(
-                distance_squared,
-                (junction_box_positions[i], junction_box_positions[j]),
-            );
-        }
-    }
+    let distances_squared_to_pairs: BTreeMap<i64, (Position, Position)> =
+        all_distances_squared(junction_box_positions);
 
     for (position1, position2) in distances_squared_to_pairs.values() {
         let circuit1_id = *positions_to_circuits.get(position1).unwrap();
