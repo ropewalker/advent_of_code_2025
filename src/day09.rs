@@ -9,14 +9,17 @@ fn parse_input(input: &str) -> Vec<(i64, i64)> {
     parser.parse(input).unwrap()
 }
 
+fn rectangle_area(tile1: &(i64, i64), tile2: &(i64, i64)) -> i64 {
+    ((tile1.0 - tile2.0).abs() + 1) * ((tile1.1 - tile2.1).abs() + 1)
+}
+
 #[aoc(day9, part1)]
 fn part1(red_tiles: &[(i64, i64)]) -> i64 {
     let mut largest_area = 0;
 
     for i in 0..red_tiles.len() - 1 {
         for j in i + 1..red_tiles.len() {
-            let area = ((red_tiles[i].0 - red_tiles[j].0).abs() + 1)
-                * ((red_tiles[i].1 - red_tiles[j].1).abs() + 1);
+            let area = rectangle_area(&red_tiles[i], &red_tiles[j]);
 
             if area > largest_area {
                 largest_area = area;
