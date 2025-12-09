@@ -88,10 +88,9 @@ fn three_largest_circuits_product(
     let mut circuit_sizes = circuits
         .values()
         .map(|circuit| circuit.len())
-        .collect::<Vec<_>>();
-    circuit_sizes.sort_unstable_by(|a, b| b.cmp(a));
+        .collect::<BinaryHeap<_>>();
 
-    circuit_sizes.iter().take(3).product()
+    (0..3).fold(1, |product, _| product * circuit_sizes.pop().unwrap())
 }
 
 #[aoc(day8, part1)]
