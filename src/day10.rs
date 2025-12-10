@@ -59,7 +59,37 @@ fn configure_lights(machine: &Machine) -> usize {
 }
 
 fn configure_joltage_level_counters(machine: &Machine) -> usize {
-    unimplemented!()
+    let mut queue = VecDeque::from([(
+        vec![0; machine.joltages.len()],
+        vec![0; machine.buttons.len()],
+    )]);
+    let mut visited = HashSet::from([vec![0; machine.buttons.len()]]);
+
+    while let Some((joltages, presses)) = queue.pop_front() {
+        if joltages == machine.joltages {
+            return presses.iter().sum();
+        }
+
+        for (index, button) in machine.buttons.iter().enumerate() {
+            let mut new_presses = presses.clone();
+            new_presses[index] += 1;
+
+            let mut new_joltages = joltages.clone();
+            button.iter().for_each(|index| new_joltages[*index] += 1);
+
+            if !visited.contains(&new_presses)
+                && !new_joltages
+                    .iter()
+                    .enumerate()
+                    .any(|(index, joltage)| *joltage > machine.joltages[index])
+            {
+                visited.insert(new_presses.clone());
+                queue.push_back((new_joltages, new_presses));
+            }
+        }
+    }
+
+    unreachable!()
 }
 
 #[aoc(day10, part1)]
