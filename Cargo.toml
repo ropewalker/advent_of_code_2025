@@ -8,3 +8,4 @@ authors = ["Dima Lazarev <dmitry.lazarev@gmail.com>"]
 aoc-runner = "0.3.0"
 aoc-runner-derive = "0.3.0"
 aoc-parse = "0.2.18"
+num-rational = "0.4"
