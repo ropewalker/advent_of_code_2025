@@ -50,11 +50,13 @@ fn parse_input(input: &str) -> (Vec<Shape>, Vec<RegionPacking>) {
 
 impl Shape {
     fn rotate(&self) -> Shape {
-        let mut new_shape: Shape = Shape(vec![vec![false; self.0[0].len()]; self.0.len()]);
+        let mut new_shape: Shape = Shape(vec![vec![false; self.0.len()]; self.0[0].len()]);
 
-        (0..self.0[0].len()).for_each(|x| {
-            (0..self.0.len()).for_each(|y| new_shape.0[y][x] = self.0[self.0.len() - 1 - x][y])
-        });
+        for (y, row) in new_shape.0.iter_mut().enumerate() {
+            for (x, element) in row.iter_mut().enumerate() {
+                *element = self.0[self.0.len() - 1 - x][y];
+            }
+        }
 
         new_shape
     }
@@ -62,9 +64,11 @@ impl Shape {
     fn flip(&self) -> Shape {
         let mut new_shape: Shape = Shape(vec![vec![false; self.0[0].len()]; self.0.len()]);
 
-        (0..self.0.len()).for_each(|x| {
-            (0..self.0[0].len()).for_each(|y| new_shape.0[y][x] = self.0[y][self.0.len() - 1 - x])
-        });
+        for (y, row) in new_shape.0.iter_mut().enumerate() {
+            for (x, element) in row.iter_mut().enumerate() {
+                *element = self.0[y][self.0.len() - 1 - x];
+            }
+        }
 
         new_shape
     }
