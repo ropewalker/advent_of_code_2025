@@ -160,19 +160,27 @@ fn pack_shapes(
 
 #[aoc(day12, part1)]
 fn part1((shapes, regions): &(Vec<Shape>, Vec<RegionPacking>)) -> usize {
+    let shape_sizes = shapes
+        .iter()
+        .map(|shape| {
+            shape
+                .0
+                .iter()
+                .map(|row| row.iter().filter(|x| **x).count())
+                .sum::<usize>()
+        })
+        .collect::<Vec<_>>();
+
     regions
         .iter()
-        .filter_map(|region_packing| {
-            if pack_shapes(
-                &vec![vec![false; region_packing.width]; region_packing.height],
-                &region_packing.shapes_to_fit,
-                shapes,
-                &mut HashMap::new(),
-            ) {
-                Some(1)
-            } else {
-                None
-            }
+        .filter(|region_packing| {
+            region_packing.height * region_packing.width
+                >= region_packing
+                    .shapes_to_fit
+                    .iter()
+                    .enumerate()
+                    .map(|(shape_index, shape_count)| shape_sizes[shape_index] * shape_count)
+                    .sum()
         })
         .count()
 }
